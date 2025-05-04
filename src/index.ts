@@ -46,10 +46,14 @@ server.tool(
       .describe("The number of shares to buy (must be a positive integer)"),
   },
   async ({ stock, qty }) => {
-    placeOrder(stock, qty, "BUY");
-    return {
-      content: [{ type: "text", text: "Stock has been bought" }],
-    };
+    try {
+      placeOrder(stock, qty, "BUY");
+      return {
+        content: [{ type: "text", text: "Stock has been bought" }],
+      };
+    } catch (error) {
+      return { content: [{ type: "text", text: "Error buying stock", error }] };
+    }
   }
 );
 
@@ -70,10 +74,14 @@ server.tool(
       ),
   },
   async ({ stock, qty }) => {
-    placeOrder(stock, qty, "SELL");
-    return {
-      content: [{ type: "text", text: "Stock has been sold" }],
-    };
+    try {
+      placeOrder(stock, qty, "SELL");
+      return {
+        content: [{ type: "text", text: "Stock has been sold successfully" }],
+      };
+    } catch (error) {
+      return { content: [{ type: "text", text: "Error selling stock", error }] };
+    }
   }
 );
 
@@ -83,17 +91,23 @@ server.tool(
   "Retrieves the user's current stock holdings and positions. Use this when the user wants to check their portfolio or current investments.",
   {},
   async () => {
-    const positions = await getHoldings();
-    return {
-      content: [
-        {
-          type: "text",
-          text: positions
-            ? `Current positions: ${JSON.stringify(positions)}`
-            : "You don't have any open positions",
-        },
-      ],
-    };
+    try {
+      const positions = await getHoldings();
+      return {
+        content: [
+          {
+            type: "text",
+            text: positions
+              ? `Current positions: ${JSON.stringify(positions)}`
+              : "You don't have any open positions",
+          },
+        ],
+      };
+    } catch (error) {
+      return {
+        content: [{ type: "text", text: "Error retrieving positions", error }],
+      };
+    }
   }
 );
 
