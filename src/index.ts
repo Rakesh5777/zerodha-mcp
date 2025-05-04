@@ -32,40 +32,68 @@ const server = new McpServer({
 // );
 
 // Buy stock tool
-server.tool("buy-stock", 
-  { stock: z.string(), qty: z.number() },
+server.tool(
+  "buy-stock",
+  "Purchases a specified quantity of a stock. Use this tool when the user wants to buy shares of a specific company.",
+  {
+    stock: z
+      .string()
+      .describe(
+        "The stock symbol/ticker of the company to buy (e.g., AAPL, MSFT, RELIANCE)"
+      ),
+    qty: z
+      .number()
+      .describe("The number of shares to buy (must be a positive integer)"),
+  },
   async ({ stock, qty }) => {
     placeOrder(stock, qty, "BUY");
     return {
-      content: [{ type: "text", text: "Stock has been bought" }]
-    }
+      content: [{ type: "text", text: "Stock has been bought" }],
+    };
   }
 );
 
 // Sell stock tool
-server.tool("sell-stock", 
-  { stock: z.string(), qty: z.number() },
+server.tool(
+  "sell-stock",
+  "Sells a specified quantity of a stock from the user's portfolio. Use this when the user wants to sell shares they own.",
+  {
+    stock: z
+      .string()
+      .describe(
+        "The stock symbol/ticker of the company to sell (e.g., AAPL, MSFT, RELIANCE)"
+      ),
+    qty: z
+      .number()
+      .describe(
+        "The number of shares to sell (must be a positive integer and not exceed holdings)"
+      ),
+  },
   async ({ stock, qty }) => {
     placeOrder(stock, qty, "SELL");
     return {
-      content: [{ type: "text", text: "Stock has been sold" }]
-    }
+      content: [{ type: "text", text: "Stock has been sold" }],
+    };
   }
 );
 
 // Get positions tool
-server.tool("get-positions", 
+server.tool(
+  "get-positions",
+  "Retrieves the user's current stock holdings and positions. Use this when the user wants to check their portfolio or current investments.",
   {},
   async () => {
     const positions = await getHoldings();
     return {
-      content: [{ 
-        type: "text", 
-        text: positions
-          ? `Current positions: ${JSON.stringify(positions)}` 
-          : "You don't have any open positions" 
-      }]
-    }
+      content: [
+        {
+          type: "text",
+          text: positions
+            ? `Current positions: ${JSON.stringify(positions)}`
+            : "You don't have any open positions",
+        },
+      ],
+    };
   }
 );
 
